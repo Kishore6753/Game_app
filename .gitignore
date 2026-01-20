@@ -7,3 +7,4 @@
 # Knowledge graph metadata - only commit the bundle
 .knowledge/
 .knowledge
+.file_activity_report.json

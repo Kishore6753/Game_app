@@ -20,9 +20,28 @@
   <div class="container">
     <div class="heading">
       <h1 class="title">2048</h1>
-      <div class="scores-container">
-        <div class="score-container">0</div>
-        <div class="best-container">0</div>
+
+      <div class="right-controls">
+        <div class="scores-container">
+          <div class="score-container">0</div>
+          <div class="best-container">0</div>
+        </div>
+
+        <div class="theme-toggle" aria-label="Theme toggle">
+          <label class="theme-toggle-label" for="theme-toggle">
+            <span class="theme-toggle-text">Dark mode</span>
+          </label>
+          <button
+            id="theme-toggle"
+            class="theme-toggle-button"
+            type="button"
+            role="switch"
+            aria-checked="false"
+            aria-label="Toggle dark mode"
+          >
+            <span class="theme-toggle-thumb" aria-hidden="true"></span>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -85,6 +104,7 @@
     </p>
   </div>
 
+  <script src="js/theme.js"></script>
   <script src="js/bind_polyfill.js"></script>
   <script src="js/classlist_polyfill.js"></script>
   <script src="js/animframe_polyfill.js"></script>

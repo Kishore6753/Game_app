@@ -21,14 +21,40 @@ $game-container-background: #bbada0;
 
 $transition-speed: 100ms;
 
+// -------------------------
+// Theme tokens
+// -------------------------
+$bg-color: #faf8ef;
+$hr-color: lighten($text-color, 40%);
+$link-color: $text-color;
+
+// Dark theme tokens (applied via html.theme-dark)
+$dark-bg-color: #161616;
+$dark-text-color: #e9e4dc;
+$dark-hr-color: rgba(233, 228, 220, 0.2);
+$dark-link-color: #e9e4dc;
+
+// Darker board colors (keep 2048 identity but reduce brightness)
+$dark-game-container-background: #3a332c;
+$dark-grid-cell-bg: rgba(30, 30, 30, 0.35);
+$dark-game-message-bg: rgba(0, 0, 0, 0.55);
+
 html, body {
   margin: 0;
   padding: 0;
 
-  background: #faf8ef;
+  background: $bg-color;
   color: $text-color;
   font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
   font-size: 18px;
+
+  // Smooth theme transition
+  @include transition(background-color 180ms ease, color 180ms ease);
+}
+
+html.theme-dark, html.theme-dark body {
+  background: $dark-bg-color;
+  color: $dark-text-color;
 }
 
 body {
@@ -59,9 +85,15 @@ h1.title {
   }
 }
 
-.scores-container {
+.right-controls {
   float: right;
   text-align: right;
+}
+
+.scores-container {
+  display: inline-block;
+  text-align: right;
+  vertical-align: top;
 }
 
 .score-container, .best-container {
@@ -114,6 +146,80 @@ h1.title {
   content: "Best";
 }
 
+html.theme-dark {
+  .score-container, .best-container {
+    background: $dark-game-container-background;
+  }
+
+  .score-container:after, .best-container:after {
+    color: rgba(233, 228, 220, 0.75);
+  }
+}
+
+// Theme toggle control
+.theme-toggle {
+  display: inline-block;
+  margin-top: 8px;
+  margin-left: 12px;
+  vertical-align: top;
+}
+
+.theme-toggle-label {
+  display: block;
+  font-size: 13px;
+  line-height: 13px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  color: rgba($text-color, 0.8);
+}
+
+html.theme-dark .theme-toggle-label {
+  color: rgba($dark-text-color, 0.85);
+}
+
+.theme-toggle-button {
+  position: relative;
+  width: 52px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: #d8d4d0;
+  cursor: pointer;
+  @include transition(background-color 180ms ease, box-shadow 180ms ease);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(237, 194, 46, 0.35);
+  }
+}
+
+.theme-toggle-thumb {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: white;
+  @include transition(transform 180ms ease, background-color 180ms ease);
+  @include transform(translate(0, 0));
+}
+
+html.theme-dark .theme-toggle-button {
+  background: #5a5149;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+html.theme-dark .theme-toggle-button[aria-checked="true"] {
+  background: #8f7a66;
+}
+
+.theme-toggle-button[aria-checked="true"] .theme-toggle-thumb {
+  @include transform(translate(22px, 0));
+}
+
 p {
   margin-top: 0;
   margin-bottom: 10px;
@@ -121,10 +227,14 @@ p {
 }
 
 a {
-  color: $text-color;
+  color: $link-color;
   font-weight: bold;
   text-decoration: underline;
   cursor: pointer;
+}
+
+html.theme-dark a {
+  color: $dark-link-color;
 }
 
 strong {
@@ -135,9 +245,13 @@ strong {
 
 hr {
   border: none;
-  border-bottom: 1px solid lighten($text-color, 40%);
+  border-bottom: 1px solid $hr-color;
   margin-top: 20px;
   margin-bottom: 30px;
+}
+
+html.theme-dark hr {
+  border-bottom-color: $dark-hr-color;
 }
 
 .container {
@@ -212,8 +326,6 @@ hr {
         height: 60px;
         line-height: 60px;
         margin-top: 222px;
-        // height: $field-width;
-        // line-height: $field-width;
       }
 
       .lower {
@@ -224,11 +336,10 @@ hr {
       a {
         @include button;
         margin-left: 9px;
-        // margin-top: 59px;
 
-	&.keep-playing-button {
-	  display: none;
-	}
+        &.keep-playing-button {
+          display: none;
+        }
       }
 
       @include animation(fade-in 800ms ease $transition-speed * 12);
@@ -238,9 +349,9 @@ hr {
         background: rgba($tile-gold-color, .5);
         color: $bright-text-color;
 
-	a.keep-playing-button {
-	  display: inline-block;
-	}
+        a.keep-playing-button {
+          display: inline-block;
+        }
       }
 
       &.game-won, &.game-over {
@@ -310,6 +421,26 @@ hr {
 
 // End of game-field mixin
 @include game-field;
+
+// Theme-specific overrides for board elements (must apply after game-field rules)
+html.theme-dark {
+  .game-container {
+    background: $dark-game-container-background;
+  }
+
+  .grid-cell {
+    background: $dark-grid-cell-bg;
+  }
+
+  .game-container .game-message {
+    background: $dark-game-message-bg;
+  }
+
+  // Keep win overlay recognizable but less bright on dark backgrounds.
+  .game-container .game-message.game-won {
+    background: rgba($tile-gold-color, 0.45);
+  }
+}
 
 .tile {
   position: absolute; // Makes transforms relative to the top-left corner
@@ -504,6 +635,15 @@ hr {
     margin-top: 0;
     padding: 15px 10px;
     min-width: 40px;
+  }
+
+  .theme-toggle {
+    margin-top: 0;
+    margin-left: 10px;
+  }
+
+  .theme-toggle-label {
+    display: none; // save space on small screens; switch remains accessible via aria-label
   }
 
   .heading {
